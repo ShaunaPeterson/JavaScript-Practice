@@ -8,7 +8,7 @@ fetch(endpoint)//delivers a promise meaning that the data will eventually come b
 .then(data => cities.push(...data));//pushes data that has been aquired through json method. ... or spread makes it so that the array is not nest inside of another array for every argument.
 console.log(cities);
 
-function findMatches(wordToMatch, cities) {
+function findMatches(wordToMatch, cities) {//returns word typed with filter in api using regExp.
     return cities.filter(place => {
         //need to figure out if the city or state match the search.
         let match = new RegExp(wordToMatch, 'gi')//passes the variable wordToMatch uses g = global(everything within array) and i = insensitive(not case sensitive)
@@ -17,20 +17,26 @@ function findMatches(wordToMatch, cities) {
 }
 
 let searchInput = document.querySelector('.search');
-let suggestions = document.querySelector('.suggestions li');
+let suggestions = document.querySelector('.suggestions');
 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
 
 function displayMatches() {
+    const matchArray = findMatches(this.value, cities);
     let findArray = findMatches(this.value, cities);
     console.table(findArray);
     let html = findArray.map(place => {
-    // let name = document.createElement('span');
-    // name.innerHTML = `${place.city}, ${place.state}`;
-    // let population = document.createElement('span');
-    // population.innerHTML = `${place.population}`;
-    let li = document.createElement('li');
-    // return li.appendChild(name, population);
-        return li.innerHTML = `${place.city}, ${place.state}, ${place.population}`;
+        const regex = new RegExp(this.value, 'gi');//matches information entered with global list, which would not be case sensitive.
+        const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);//replaces regex variable with HTML element, so that it visibly shows up on the page.
+        const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+        return `
+          <li>
+            <span class="name">${cityName}, ${stateName}</span>
+            <span class="population">${numberWithCommas(place.population)}</span>
+          </li>
+        `;
 
     }).join('');
 
